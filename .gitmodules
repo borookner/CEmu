@@ -1,3 +1,7 @@
+[submodule "gui/qt/lua/lua"]
+	path = gui/qt/lua/lua
+	url = https://github.com/lua/lua
+
 [submodule "core/debug/zdis"]
 	path = core/debug/zdis
 	url = https://github.com/CE-Programming/zdis.git

@@ -2,6 +2,7 @@ lessThan(QT_MAJOR_VERSION, 5) : error("You need at least Qt 5.5 to build CEmu!")
 lessThan(QT_MINOR_VERSION, 5) : error("You need at least Qt 5.5 to build CEmu!")
 
 # Error if git submodules are not downloaded
+!exists("lua/lua/lua.h"): error("You have to run 'git submodule init' and 'git submodule update' first.")
 !exists("../../core/debug/zdis/zdis.c"): error("You have to run 'git submodule init' and 'git submodule update' first.")
 !exists("tivars_lib_cpp/src/TIVarFile.cpp"): error("You have to run 'git submodule init' and 'git submodule update' first.")
 
@@ -53,7 +54,8 @@ TEMPLATE = app
 # Localization
 TRANSLATIONS += i18n/fr_FR.ts i18n/es_ES.ts i18n/nl_NL.ts
 
-CONFIG += c++11 console
+# Sol2 needs at least C++14.
+CONFIG += c++14 console
 
 # Core options
 DEFINES += DEBUG_SUPPORT
@@ -70,11 +72,16 @@ CONFIG(release, debug|release) {
     GLOBAL_FLAGS += -g3
 }
 
+# TODO Lua: adjust options by platforms, see Makefile
+GLOBAL_FLAGS += -DLUA_USE_LONGJMP
+INCLUDEPATH += $$PWD/lua/
+
 # GCC/clang flags
 if (!win32-msvc*) {
     GLOBAL_FLAGS    += -W -Wall -Wextra -Wunused-function -Werror=write-strings -Werror=redundant-decls -Werror=format -Werror=format-security -Werror=declaration-after-statement -Werror=implicit-function-declaration -Werror=missing-prototypes -Werror=return-type -Werror=pointer-arith -Winit-self
     GLOBAL_FLAGS    += -ffunction-sections -fdata-sections -fno-strict-overflow
     QMAKE_CFLAGS    += -std=gnu11
+    QMAKE_CXXFLAGS  += -ftemplate-depth=2048
     isEmpty(CI) {
         # Only enable opts for non-CI release builds
         # -flto might cause an internal compiler error on GCC in some circumstances (with -g3?)... Comment it if needed.
@@ -124,12 +131,12 @@ if (!win32-msvc*) {
 		# This is a bad hack, but MOC kinda needs it to work correctly...
 		QMAKE_MOC_OPTIONS += -DPNG_WRITE_APNG_SUPPORTED
 	}
-	
+
 	# Otherwise...
     !equals(LIBPNG_APNG_FROM_VCPKG, 1) {
         # If we're not using vcpkg, we rely on manual variables to find needed
         # libpng-apng components.
-        # 
+        #
         # Note that libpng/zlib LIBS/INCLUDES should be specified in the envrionment.
         # We will use LIBPNG_APNG_LIB, ZLIB_LIB, and LIBPNG_APNG_INCLUDE.
         # The logic below accounts for both specifying in the real shell environment,
@@ -161,6 +168,8 @@ if (!win32-msvc*) {
 if (macx|linux) {
     # Be more secure by default...
     GLOBAL_FLAGS    += -fPIE -Wstack-protector -fstack-protector-strong --param=ssp-buffer-size=1
+    # Lua can do better things in this case
+    GLOBAL_FLAGS    += -DLUA_USE_POSIX
     # Use ASAN on debug builds. Watch out about ODR crashes when built with -flto. detect_odr_violation=0 as an env var may help.
     CONFIG(debug, debug|release): GLOBAL_FLAGS += -fsanitize=address,bounds -fsanitize-undefined-trap-on-error -O0
 }
@@ -180,6 +189,39 @@ if(macx) {
 
 SOURCES += \
     ../../tests/autotester/autotester.cpp \
+    lua/lua/lapi.c \
+    lua/lua/lauxlib.c \
+    lua/lua/lbaselib.c \
+    lua/lua/lbitlib.c \
+    lua/lua/lcode.c \
+    lua/lua/lcorolib.c \
+    lua/lua/lctype.c \
+    lua/lua/ldblib.c \
+    lua/lua/ldebug.c \
+    lua/lua/ldo.c \
+    lua/lua/ldump.c \
+    lua/lua/lfunc.c \
+    lua/lua/lgc.c \
+    lua/lua/linit.c \
+    lua/lua/liolib.c \
+    lua/lua/llex.c \
+    lua/lua/lmathlib.c \
+    lua/lua/lmem.c \
+    lua/lua/loadlib.c \
+    lua/lua/lobject.c \
+    lua/lua/lopcodes.c \
+    lua/lua/loslib.c \
+    lua/lua/lparser.c \
+    lua/lua/lstate.c \
+    lua/lua/lstring.c \
+    lua/lua/lstrlib.c \
+    lua/lua/ltable.c \
+    lua/lua/ltablib.c \
+    lua/lua/ltm.c \
+    lua/lua/lundump.c \
+    lua/lua/lutf8lib.c \
+    lua/lua/lvm.c \
+    lua/lua/lzio.c \
     ../../core/asic.c \
     ../../core/cpu.c \
     ../../core/keypad.c \
@@ -219,6 +261,8 @@ SOURCES += \
     sendinghandler.cpp \
     debugger.cpp \
     settings.cpp \
+    luascripting.cpp \
+    luaeditor.cpp \
     capture/animated-png.c \
     keypad/qtkeypadbridge.cpp \
     keypad/keymap.cpp \
@@ -276,6 +320,33 @@ SOURCES +=  ../../tests/autotester/autotester_cli.cpp \
 
 HEADERS  += \
     ../../tests/autotester/autotester.h \
+    lua/lua.hpp \
+    lua/lua/lapi.h \
+    lua/lua/lauxlib.h \
+    lua/lua/lcode.h \
+    lua/lua/lctype.h \
+    lua/lua/ldebug.h \
+    lua/lua/ldo.h \
+    lua/lua/lfunc.h \
+    lua/lua/lgc.h \
+    lua/lua/llex.h \
+    lua/lua/llimits.h \
+    lua/lua/lmem.h \
+    lua/lua/lobject.h \
+    lua/lua/lopcodes.h \
+    lua/lua/lparser.h \
+    lua/lua/lprefix.h \
+    lua/lua/lstate.h \
+    lua/lua/lstring.h \
+    lua/lua/ltable.h \
+    lua/lua/ltm.h \
+    lua/lua/lua.h \
+    lua/lua/luaconf.h \
+    lua/lua/lualib.h \
+    lua/lua/lundump.h \
+    lua/lua/lvm.h \
+    lua/lua/lzio.h \
+    lua/sol.hpp \
     ../../core/asic.h \
     ../../core/cpu.h \
     ../../core/atomics.h \
@@ -315,6 +386,7 @@ HEADERS  += \
     dockwidget.h \
     searchwidget.h \
     basiccodeviewerwindow.h \
+    luaeditor.h \
     sendinghandler.h \
     keypad/qtkeypadbridge.h \
     keypad/keymap.h \
