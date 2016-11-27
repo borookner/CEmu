@@ -517,10 +517,11 @@ private:
     void contextMemWidget(const QPoint &posa, uint32_t addr);
 
     // Lua
-    void initLuaThings();
+    void initLuaThings(sol::state &lua, bool isREPL);
     void loadLuaScript();
     void saveLuaScript();
     void runLuaScript();
+    void LuaREPLeval();
 
 #ifdef _WIN32
     // Win32 Console Toggle
@@ -654,6 +655,9 @@ private:
 
     QFont varPreviewCEFont;
     QFont varPreviewItalicFont;
+
+    sol::state ed_lua;
+    sol::state repl_lua;
 
     static const char *m_varExtensions[];
 
