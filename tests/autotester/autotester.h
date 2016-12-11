@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <functional>
 
 #include "../../core/atomics.h"
 namespace cemucore
@@ -73,6 +74,8 @@ namespace autotester
     void sendCSC(uint8_t csc);
     void sendKey(uint16_t key);
     void sendLetterKeyPress(char letter);
+
+    extern const std::function<void(const std::string&)> pressKeyFromName;
 
     bool launchCommand(const std::pair<std::string, std::string>& command);
 

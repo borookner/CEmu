@@ -439,6 +439,7 @@ private:
     void recentSaveInfo();
 
     // autotester
+    void pressKeyFromName(const std::string&);
     int autotesterOpen(const QString &jsonPath);
     void autotesterUpdatePresets(int comboBoxIdx);
     void autotesterErr(int errCode);

@@ -2027,6 +2027,11 @@ void MainWindow::varResend() {
 // Autotester things
 // ------------------------------------------------
 
+void MainWindow::pressKeyFromName(const std::string& key)
+{
+    autotester::pressKeyFromName(key);
+}
+
 void MainWindow::autotesterErr(int errCode) {
     QString errMsg;
     switch (errCode) {
