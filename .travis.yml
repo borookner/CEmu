@@ -6,7 +6,20 @@ dist: xenial
 env:
   - PATH=/opt/qt56/bin:/usr/local/opt/qt5/bin:$PATH
 
+env:
+  global:
+  - secure: DZrUb/bL6NIXTsNyyK8UFjuj4tmZmRILk8mcYXTepAHcJevOmRtSi/fiRJWp9N36DI30pGbKwme2BA9M8a+DsxNaoPklLa5pAVBPGhpLxIS9pIms+ZzSbxYvToXqTTEWPqmHdr3a7oxiSjG1z4WiStYQmbhQFwZvgAO8cOL9gBc2WV1yZMEqkHR6zvOp8LbGYWcvz29tnQ5ORhX0M2DjLlZ3id9DWInkkC/WerbPtW6Z9R41oGxNBI7WWaVG19e0VwkHOPbjRJHS6ftZw1kIiNkbwCl6Lnyyn4ack7mB+joECXauCV5qkwMmgAsTi6kouSwUoMuyPb90jFOrpkdGfosNAhSnN8x0BY3eLIR9imInOnbs9+YEoHcXGBxVZ8zXZxlXPDYuB72V+OKhvrZoX+IVG6rCE+yf7FPy8BKVMJpNOEoGkyDiNawfDnbYhqso5IDZIt8lT2bBb2M1VFy3hrNt8fa36MJParzkJp1LdccScgNoA9LMm5tmXBE1wdmptxODBNCRqd58+h7Sh/LIFmlgNfxVMT0XG5dqe4GYHIRSGZpoXvecv7hslVybie2KddamH4vK3D1Rwtubb3VZZU52/pmHl+4rxI10serydjMMhbin5sFMSvieVZBiaeka3TnXm1xtumIQVUaeo5amdfbxbLwJKuViQGlGruT2gSE=
+
 addons:
+  coverity_scan:
+    project:
+      name: CE-Programming/CEmu
+      description: Build submitted via Travis CI
+    build_command_prepend: cov-configure --gcc
+    build_command: make -C core -j4
+    branch_pattern: coverity_scan
+    notification_email:
+      secure: YYowtQanGhvtRryWFG9UqyOkEmecN0L61hjhWMJEhhtNH7bBkFj2rTdShn+yTa9pFTBXoN1+MjxFrHzEr2VwUBGP+Ku4uEFK+fbrZF+rXkZiTqAmKrO26udpfD8IPM2yE3DkvCTjmMPB+khPr0ZVbJuhpKCeB82JLiEuujIjVgRBxrs3L3ktv2VHUpVM9mUUaEIWHQ9MiBLcvRjuUpxXPdnHZxMsFx3wWkkKmaU5jMsJTdc5Sf9qshY7gIsM6rXjVQl2N20dlZzMOzsqd+Gi4n9SHp6lPTrB9e2/BBDu9BSYKnSxfCg9Bx/2YQQqolHruBqIi86MzX6S1IkIeATfBtuAojkh8MHADSTLvBY7cn9MBOcH8ERtNjeRPyiCk8VmNrZj5y/bCIyJCoqkQuSWOOf76gwjNXe2CdaKzO7rfnP1amF21GwyQta6wZhWeilB7xuPRIAab8yOtptW1EVmGHpjdGNTGv99/XYsadaYW1WL6NzsE1qcl5tVCzzRBqVzu9Q/0YY+F8F0HJUVubN/5CZwQSxH3Q1ss8TBGn+4FqYRfOvGFZMGhkF9Aq8yeP0erJF8S2PvNU2gyJf1zqoluS/tYc8VhfyAEFKj5+vB7SUqXLgqFrguruLiv6icLAcWLxfN3/vfQAgQ1bqwLdQT4g7BVMc+iImvlnOc2CkwhPQ=
   apt:
     sources:
       - sourceline: 'ppa:beineri/opt-qt563-xenial'
@@ -18,18 +31,9 @@ addons:
       - libusb-1.0-0-dev
 
 script:
-  - cd gui/qt/capture ; bash ./get_libpng-apng.sh ; cd ../../../
-  - mkdir build
-  - cd build
-  - qmake ../gui/qt && make -j4
-  - cd ../core
-  - make clean && make -j4 CPPFLAGS="-DMULTITHREAD" all
-  - cd ../tests/autotester
-  - make clean && make -j4 CPPFLAGS="-DMULTITHREAD -DGLOB_SUPPORT" all
-  - cd ../../core
-  - make clean && make -j4 all
-  - cd ../gui/sdl/
-  - make clean && make -j4 all
+  - if [[ -e cov-int/build-log.txt ]]; then echo Coverity Build Log found; else echo No Coverity build log found; fi
+  - if [[ -e cov-int/scm_log.txt ]]; then echo Coverity SCM Log found; else echo No Coverity SCM log found; fi
+  - echo "Resulting cov-int directory:"; ls -lh cov-int
 
 notifications:
   irc:
