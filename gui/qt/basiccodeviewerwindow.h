@@ -105,7 +105,6 @@ class BasicCodeViewerWindow : public QDialog {
 
 public:
     explicit BasicCodeViewerWindow(QWidget *p = Q_NULLPTR, bool doHighlight = true, bool doWrap = false, bool doFormat = false);
-    void getAndProcessCurrExecPos();
     void setVariableName(const QString &name);
     void setOriginalCode(const QString &code, bool reindent);
     ~BasicCodeViewerWindow() override;
@@ -126,7 +125,6 @@ private:
     bool m_showingWrapped = false;
     bool m_showingFormatted = false;
     bool hasCodeYet = false;
-    QTimer* currExecTimer;
 };
 
 #endif
