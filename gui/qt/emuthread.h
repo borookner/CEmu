@@ -26,7 +26,7 @@ public:
     void resume();
     void receive();
     void unblock();
-    void debug(bool);
+    void debug(bool state, debug_mode_t mode);
     void doStuff();
     void throttleWait();
     void setSpeed(int value);
@@ -52,7 +52,8 @@ public:
         RequestSend,
         RequestReceive,
         RequestAutoTester,
-        RequestDebugger
+        RequestDebugger,
+        RequestBasicDebugger
     };
 
     int type = ConsoleNorm;
