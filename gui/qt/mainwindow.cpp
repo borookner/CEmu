@@ -2217,7 +2217,7 @@ void MainWindow::resetEmu() {
         debugToggle();
     }
     if (guiDebugBasic) {
-        debugBasicToggle();
+        debugBasic(false);
     }
 
     emu.reset();
@@ -2276,7 +2276,7 @@ void MainWindow::emuLoad(emu_data_t type) {
         debugToggle();
     }
     if (guiDebugBasic) {
-        debugBasicToggle();
+        debugBasic(false);
     }
 
     switch (type) {
