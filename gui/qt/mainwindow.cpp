@@ -357,6 +357,7 @@ MainWindow::MainWindow(CEmuOpts &cliOpts, QWidget *p) : QMainWindow(p), ui(new U
     connect(ui->guiSkip, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &MainWindow::setGuiSkip);
     connect(ui->checkSkin, &QCheckBox::stateChanged, this, &MainWindow::setSkinToggle);
     connect(ui->checkSpi, &QCheckBox::toggled, this, &MainWindow::setLcdSpi);
+    connect(ui->checkPythonEdition, &QCheckBox::stateChanged, this, &MainWindow::setPythonEdition);
     connect(ui->checkAlwaysOnTop, &QCheckBox::stateChanged, this, &MainWindow::setTop);
     connect(ui->emulationSpeed, &QSlider::valueChanged, this, &MainWindow::setEmuSpeed);
     connect(ui->emulationSpeedSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &MainWindow::setEmuSpeed);
@@ -566,6 +567,7 @@ MainWindow::MainWindow(CEmuOpts &cliOpts, QWidget *p) : QMainWindow(p), ui(new U
     setDebugIgnoreBreakpoints(m_config->value(SETTING_DEBUGGER_BREAK_IGNORE, false).toBool());
     setDebugSoftCommands(m_config->value(SETTING_DEBUGGER_ENABLE_SOFT, true).toBool());
     setPreRevisionI(m_config->value(SETTING_DEBUGGER_PRE_I, false).toBool());
+    setPythonEdition(m_config->value(SETTING_PYTHON_EDITION, false).toBool());
     setNormalOs(m_config->value(SETTING_DEBUGGER_NORM_OS, true).toBool());
     setLcdDma(m_config->value(SETTING_DEBUGGER_IGNORE_DMA, true).toBool());
     setFocusSetting(m_config->value(SETTING_PAUSE_FOCUS, false).toBool());

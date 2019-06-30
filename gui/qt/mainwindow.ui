@@ -8800,6 +8800,13 @@ QPushButton:pressed {
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QCheckBox" name="checkPythonEdition">
+                 <property name="text">
+                  <string>Emulate Python Edition</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
