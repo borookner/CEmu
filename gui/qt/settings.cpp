@@ -462,9 +462,11 @@ void MainWindow::setKeypadColor(unsigned int color) {
 }
 
 void MainWindow::setCalcSkinTopFromType() {
-    bool is83 = get_device_type() == TI83PCE;
-    ui->calcSkinTop->setStyleSheet(is83 ? QStringLiteral(".QFrame { border-image: url(:/skin/resources/skin/ti83pce.png) 0 0 0 0 stretch stretch; }")
-                                        : QStringLiteral(".QFrame { border-image: url(:/skin/resources/skin/ti84pce.png) 0 0 0 0 stretch stretch; }"));
+    const bool is83 = get_device_type() == TI83PCE;
+    const bool is83EP = is83 && asic.python;
+    ui->calcSkinTop->setStyleSheet(is83EP ? QStringLiteral(".QFrame { border-image: url(:/skin/resources/skin/ti83pce_ep.png) 0 0 0 0 stretch stretch; }")
+                                   : is83 ? QStringLiteral(".QFrame { border-image: url(:/skin/resources/skin/ti83pce.png) 0 0 0 0 stretch stretch; }")
+                                          : QStringLiteral(".QFrame { border-image: url(:/skin/resources/skin/ti84pce.png) 0 0 0 0 stretch stretch; }"));
 }
 
 void MainWindow::setImagePath() {
@@ -931,6 +933,7 @@ void MainWindow::setPythonEdition(bool state) {
     ui->checkPythonEdition->setChecked(state);
     m_config->setValue(SETTING_PYTHON_EDITION, state);
     asic.python = state;
+    setCalcSkinTopFromType();
 }
 
 void MainWindow::setNormalOs(bool state) {
